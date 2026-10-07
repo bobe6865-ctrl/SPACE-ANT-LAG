@@ -1,663 +1,341 @@
---==================================================
--- SPACE ANT LAG
--- ULTRA LOW GRAPHICS - PROJETO X SUPREME
---==================================================
+local a=game:GetService("Players")
+local b=game:GetService("Workspace")
+local c=game:GetService("Lighting")
+local d=UserSettings()
+local e=d:GetService("UserGameSettings")
+local f=a.LocalPlayer
 
-local Players = game:GetService("Players")
-local Workspace = game:GetService("Workspace")
-local Lighting = game:GetService("Lighting")
-local UserSettingsService = UserSettings()
-local UserGameSettings = UserSettingsService:GetService("UserGameSettings")
+local g=true
+local h=true
+local i=false
+local j=true
+local k=true
 
-local LocalPlayer = Players.LocalPlayer
-
---==================================================
--- CONFIGURAÇÃO
---==================================================
-
-local MAX_GRAPHICS = true
-local HIDE_PLAYER_SKINS = true
-local HIDE_OWN_SKIN = false
-local PRESERVE_DRAGON = true
-local SIMPLIFY_MATERIALS = true
-
---==================================================
--- QUALIDADE NO MÍNIMO
---==================================================
+pcall(function()e.SavedQualityLevel=Enum.SavedQualitySetting.QualityLevel1 end)
+pcall(function()e.GraphicsOptimizationMode=Enum.GraphicsOptimizationMode.Performance end)
 
 pcall(function()
-	UserGameSettings.SavedQualityLevel =
-		Enum.SavedQualitySetting.QualityLevel1
+	c.GlobalShadows=false
+	c.Brightness=0
+	c.EnvironmentDiffuseScale=0
+	c.EnvironmentSpecularScale=0
+	c.ExposureCompensation=0
+	c.FogStart=100000
+	c.FogEnd=100000
+	c.Ambient=Color3.fromRGB(128,128,128)
+	c.OutdoorAmbient=Color3.fromRGB(128,128,128)
+	c.PrioritizeLightingQuality=false
+	c.LightingStyle=Enum.LightingStyle.Soft
 end)
 
 pcall(function()
-	UserGameSettings.GraphicsOptimizationMode =
-		Enum.GraphicsOptimizationMode.Performance
-end)
-
---==================================================
--- LIGHTING
---==================================================
-
-pcall(function()
-	Lighting.GlobalShadows = false
-	Lighting.Brightness = 0
-	Lighting.EnvironmentDiffuseScale = 0
-	Lighting.EnvironmentSpecularScale = 0
-	Lighting.ExposureCompensation = 0
-
-	Lighting.FogStart = 100000
-	Lighting.FogEnd = 100000
-
-	Lighting.Ambient = Color3.fromRGB(128,128,128)
-	Lighting.OutdoorAmbient = Color3.fromRGB(128,128,128)
-
-	Lighting.PrioritizeLightingQuality = false
-	Lighting.LightingStyle = Enum.LightingStyle.Soft
-end)
-
---==================================================
--- TERRAIN
---==================================================
-
-pcall(function()
-
-	local Terrain = Workspace:FindFirstChildOfClass("Terrain")
-
-	if Terrain then
-		Terrain.Decoration = false
-		Terrain.WaterWaveSize = 0
-		Terrain.WaterWaveSpeed = 0
-		Terrain.WaterReflectance = 0
-		Terrain.WaterTransparency = 1
+	local t=b:FindFirstChildOfClass("Terrain")
+	if t then
+		t.Decoration=false
+		t.WaterWaveSize=0
+		t.WaterWaveSpeed=0
+		t.WaterReflectance=0
+		t.WaterTransparency=1
 	end
-
 end)
 
---==================================================
--- EFEITOS
---==================================================
-
-local EFFECT_WORDS = {
-	"particle",
-	"particles",
-	"vfx",
-	"fx",
-	"effect",
-	"effects",
-	"trail",
-	"beam",
-	"smoke",
-	"fire",
-	"spark",
-	"sparks",
-	"glow",
-	"flash",
-	"explosion",
-	"blast",
-	"shockwave",
-	"wave",
-	"aura",
-	"ring",
-	"slash",
-	"energy",
-	"projectile",
-	"bullet",
-	"missile",
-	"attack",
-	"skill",
-	"ability",
-	"portal",
-	"control",
-	"zone",
-	"field",
-	"domain",
-	"charge",
-	"impact",
-	"hit",
-	"damage"
+local l={
+	"particle","particles","vfx","fx","effect","effects",
+	"trail","beam","smoke","fire","spark","sparks","glow",
+	"flash","explosion","blast","shockwave","wave","aura",
+	"ring","slash","energy","projectile","bullet","missile",
+	"attack","skill","ability","portal","control","zone",
+	"field","domain","charge","impact","hit","damage"
 }
 
---==================================================
--- DRAGON
---==================================================
-
-local function IsDragon(obj)
-
-	if not PRESERVE_DRAGON then
-		return false
-	end
-
-	local current = obj
-
-	while current and current ~= Workspace do
-
-		if string.find(
-			string.lower(current.Name),
-			"dragon"
-		) then
+local function m(o)
+	if not j then return false end
+	local x=o
+	while x and x~=b do
+		if string.find(string.lower(x.Name),"dragon") then
 			return true
 		end
-
-		current = current.Parent
+		x=x.Parent
 	end
-
 	return false
 end
 
---==================================================
--- DETECTAR EFEITO PELO NOME
---==================================================
-
-local function IsEffectName(obj)
-
-	local name = string.lower(obj.Name)
-
-	for _,word in ipairs(EFFECT_WORDS) do
-
-		if string.find(name, word) then
+local function n(o)
+	local x=string.lower(o.Name)
+	for _,w in ipairs(l) do
+		if string.find(x,w) then
 			return true
 		end
-
 	end
-
 	return false
 end
 
---==================================================
--- PARTICLES
---==================================================
-
-local function DisableParticle(obj)
-
-	if IsDragon(obj) then
-		return
-	end
-
-	if obj:IsA("ParticleEmitter") then
-
-		obj.Enabled = false
-		obj.Rate = 0
-		obj.TimeScale = 0
-
-		pcall(function()
-			obj.LocalTransparencyModifier = 1
-		end)
-
-		obj:Clear()
-
+local function o(x)
+	if m(x) then return end
+	if x:IsA("ParticleEmitter") then
+		x.Enabled=false
+		x.Rate=0
+		x.TimeScale=0
+		pcall(function()x.LocalTransparencyModifier=1 end)
+		x:Clear()
 	end
 end
 
---==================================================
--- TRAIL
---==================================================
-
-local function DisableTrail(obj)
-
-	if IsDragon(obj) then
-		return
-	end
-
-	if obj:IsA("Trail") then
-
-		obj.Enabled = false
-		obj.Lifetime = 0
-
-		pcall(function()
-			obj.LocalTransparencyModifier = 1
-		end)
-
+local function p(x)
+	if m(x) then return end
+	if x:IsA("Trail") then
+		x.Enabled=false
+		x.Lifetime=0
+		pcall(function()x.LocalTransparencyModifier=1 end)
 	end
 end
 
---==================================================
--- BEAM
---==================================================
-
-local function DisableBeam(obj)
-
-	if IsDragon(obj) then
-		return
-	end
-
-	if obj:IsA("Beam") then
-
-		obj.Enabled = false
-
-		pcall(function()
-			obj.LocalTransparencyModifier = 1
-		end)
-
+local function q(x)
+	if m(x) then return end
+	if x:IsA("Beam") then
+		x.Enabled=false
+		pcall(function()x.LocalTransparencyModifier=1 end)
 	end
 end
 
---==================================================
--- OUTROS EFEITOS
---==================================================
+local function r(x)
+	if m(x) then return end
 
-local function DisableOtherEffects(obj)
-
-	if IsDragon(obj) then
-		return
+	if x:IsA("Smoke") then
+		x.Enabled=false
+		x.Opacity=0
 	end
 
-	if obj:IsA("Smoke") then
-		obj.Enabled = false
-		obj.Opacity = 0
+	if x:IsA("Fire") then
+		x.Enabled=false
+		x.Heat=0
+		x.Size=0
 	end
 
-	if obj:IsA("Fire") then
-		obj.Enabled = false
-		obj.Heat = 0
-		obj.Size = 0
+	if x:IsA("Sparkles") then
+		x.Enabled=false
 	end
 
-	if obj:IsA("Sparkles") then
-		obj.Enabled = false
+	if x:IsA("Highlight") then
+		x.Enabled=false
+		x.FillTransparency=1
+		x.OutlineTransparency=1
 	end
 
-	if obj:IsA("Highlight") then
-		obj.Enabled = false
-		obj.FillTransparency = 1
-		obj.OutlineTransparency = 1
+	if x:IsA("PointLight")
+		or x:IsA("SpotLight")
+		or x:IsA("SurfaceLight") then
+		x.Enabled=false
+		x.Brightness=0
+		x.Range=0
 	end
 
-	if obj:IsA("PointLight")
-		or obj:IsA("SpotLight")
-		or obj:IsA("SurfaceLight") then
-
-		obj.Enabled = false
-		obj.Brightness = 0
-		obj.Range = 0
-	end
-
-	if obj:IsA("Explosion") then
-		obj.Visible = false
+	if x:IsA("Explosion") then
+		x.Visible=false
 	end
 end
 
---==================================================
--- TEXTURAS
---==================================================
+local function s(x)
+	if m(x) then return end
 
-local function DisableTextures(obj)
-
-	if IsDragon(obj) then
-		return
+	if x:IsA("Decal") then
+		x.Transparency=1
 	end
 
-	if obj:IsA("Decal") then
-		obj.Transparency = 1
+	if x:IsA("Texture") then
+		x.Transparency=1
 	end
 
-	if obj:IsA("Texture") then
-		obj.Transparency = 1
-	end
-
-	if obj:IsA("SurfaceAppearance") then
-
-		pcall(function()
-			obj:Destroy()
-		end)
-
+	if x:IsA("SurfaceAppearance") then
+		pcall(function()x:Destroy()end)
 	end
 end
 
---==================================================
--- PARTES DE EFEITO
---==================================================
+local function t(x)
+	if m(x) then return end
+	if not x:IsA("BasePart") then return end
+	if not n(x) then return end
 
-local function ReduceEffectPart(obj)
-
-	if IsDragon(obj) then
-		return
-	end
-
-	if not obj:IsA("BasePart") then
-		return
-	end
-
-	if not IsEffectName(obj) then
-		return
-	end
-
-	obj.CastShadow = false
-	obj.Reflectance = 0
-	obj.LocalTransparencyModifier = 1
+	x.CastShadow=false
+	x.Reflectance=0
+	x.LocalTransparencyModifier=1
 end
 
---==================================================
--- MATERIAIS
---==================================================
+local function u(x)
+	if not k then return end
+	if m(x) then return end
+	if not x:IsA("BasePart") then return end
 
-local function SimplifyPart(obj)
-
-	if not SIMPLIFY_MATERIALS then
-		return
-	end
-
-	if IsDragon(obj) then
-		return
-	end
-
-	if not obj:IsA("BasePart") then
-		return
-	end
-
-	obj.CastShadow = false
-	obj.Reflectance = 0
+	x.CastShadow=false
+	x.Reflectance=0
 
 	pcall(function()
-		obj.Material = Enum.Material.SmoothPlastic
+		x.Material=Enum.Material.SmoothPlastic
 	end)
 end
 
---==================================================
--- SKINS DOS PLAYERS
---==================================================
+local function v(ch)
+	if not h then return end
 
-local function HidePlayerSkin(character)
-
-	if not HIDE_PLAYER_SKINS then
+	if ch==f.Character and not i then
 		return
 	end
 
-	if character == LocalPlayer.Character
-		and not HIDE_OWN_SKIN then
-		return
-	end
+	if m(ch) then return end
 
-	if IsDragon(character) then
-		return
-	end
-
-	for _,obj in ipairs(character:GetDescendants()) do
-
-		if obj:IsA("Accessory") then
-
-			for _,child in ipairs(obj:GetDescendants()) do
-
-				if child:IsA("BasePart") then
-					child.LocalTransparencyModifier = 1
-
-				elseif child:IsA("Decal")
-					or child:IsA("Texture") then
-
-					child.Transparency = 1
-				end
-
-			end
-		end
-
-		if obj:IsA("Shirt")
-			or obj:IsA("Pants")
-			or obj:IsA("ShirtGraphic") then
-
-			pcall(function()
-				obj.Parent = nil
-			end)
-
-		end
-	end
-end
-
---==================================================
--- PROCESSAR OBJETO
---==================================================
-
-local function Process(obj)
-
-	if not MAX_GRAPHICS then
-		return
-	end
-
-	if not obj or not obj.Parent then
-		return
-	end
-
-	DisableParticle(obj)
-	DisableTrail(obj)
-	DisableBeam(obj)
-	DisableOtherEffects(obj)
-	DisableTextures(obj)
-	ReduceEffectPart(obj)
-	SimplifyPart(obj)
-end
-
---==================================================
--- PROCESSAR MAPA
---==================================================
-
-for _,obj in ipairs(Lighting:GetDescendants()) do
-	Process(obj)
-end
-
-for _,obj in ipairs(Workspace:GetDescendants()) do
-	Process(obj)
-end
-
---==================================================
--- CLOUDS
---==================================================
-
-for _,obj in ipairs(Workspace:GetDescendants()) do
-
-	if obj:IsA("Clouds") then
-
-		pcall(function()
-			obj.Enabled = false
-		end)
-
-	end
-end
-
---==================================================
--- PÓS-PROCESSAMENTO
---==================================================
-
-for _,obj in ipairs(Lighting:GetChildren()) do
-
-	if obj:IsA("BloomEffect")
-		or obj:IsA("BlurEffect")
-		or obj:IsA("ColorCorrectionEffect")
-		or obj:IsA("DepthOfFieldEffect")
-		or obj:IsA("SunRaysEffect") then
-
-		obj.Enabled = false
-	end
-
-	if obj:IsA("Atmosphere") then
-
-		obj.Density = 0
-		obj.Haze = 0
-		obj.Glare = 0
-
-	end
-end
-
---==================================================
--- PLAYERS EXISTENTES
---==================================================
-
-for _,player in ipairs(Players:GetPlayers()) do
-
-	if player.Character then
-
-		HidePlayerSkin(player.Character)
-
-		for _,obj in ipairs(player.Character:GetDescendants()) do
-			Process(obj)
-		end
-
-	end
-end
-
---==================================================
--- NOVOS PLAYERS
---==================================================
-
-Players.PlayerAdded:Connect(function(player)
-
-	player.CharacterAdded:Connect(function(character)
-
-		task.wait(0.3)
-
-		HidePlayerSkin(character)
-
-		for _,obj in ipairs(character:GetDescendants()) do
-			Process(obj)
-		end
-
-	end)
-
-end)
-
---==================================================
--- NOVOS OBJETOS
---==================================================
-
-Workspace.DescendantAdded:Connect(function(obj)
-
-	task.defer(function()
-
-		if obj and obj.Parent then
-
-			Process(obj)
-
-			local character =
-				obj:FindFirstAncestorOfClass("Model")
-
-			if character then
-
-				local player =
-					Players:GetPlayerFromCharacter(character)
-
-				if player
-					and player ~= LocalPlayer then
-
-					HidePlayerSkin(character)
-
+	for _,x in ipairs(ch:GetDescendants()) do
+		if x:IsA("Accessory") then
+			for _,z in ipairs(x:GetDescendants()) do
+				if z:IsA("BasePart") then
+					z.LocalTransparencyModifier=1
+				elseif z:IsA("Decal") or z:IsA("Texture") then
+					z.Transparency=1
 				end
 			end
 		end
 
-	end)
-
-end)
-
---==================================================
--- NOVOS EFEITOS NO LIGHTING
---==================================================
-
-Lighting.DescendantAdded:Connect(function(obj)
-
-	task.defer(function()
-
-		if obj and obj.Parent then
-			Process(obj)
+		if x:IsA("Shirt")
+			or x:IsA("Pants")
+			or x:IsA("ShirtGraphic") then
+			pcall(function()x.Parent=nil end)
 		end
+	end
+end
 
-	end)
+local function w(x)
+	if not g then return end
+	if not x or not x.Parent then return end
 
-end)
+	o(x)
+	p(x)
+	q(x)
+	r(x)
+	s(x)
+	t(x)
+	u(x)
+end
 
---==================================================
--- NOTIFICAÇÃO SPACE ANT LAG
---==================================================
+for _,x in ipairs(c:GetDescendants()) do
+	w(x)
+end
 
-local gui = Instance.new("ScreenGui")
-gui.Name = "SpaceAntLag"
-gui.ResetOnSpawn = false
-gui.IgnoreGuiInset = false
-gui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+for _,x in ipairs(b:GetDescendants()) do
+	w(x)
+end
 
-local frame = Instance.new("Frame")
+for _,x in ipairs(b:GetDescendants()) do
+	if x:IsA("Clouds") then
+		pcall(function()x.Enabled=false end)
+	end
+end
 
-frame.Size = UDim2.new(0, 300, 0, 72)
-frame.Position = UDim2.new(1, -315, 0, 20)
-
-frame.BackgroundColor3 =
-	Color3.fromRGB(5, 5, 8)
-
-frame.BackgroundTransparency = 0.12
-frame.Parent = gui
-
-local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(0, 10)
-corner.Parent = frame
-
-local stroke = Instance.new("UIStroke")
-stroke.Thickness = 1
-stroke.Color = Color3.fromRGB(0, 120, 255)
-stroke.Parent = frame
-
---==================================================
--- NOME
---==================================================
-
-local title = Instance.new("TextLabel")
-
-title.Size = UDim2.new(1, -10, 0, 32)
-title.Position = UDim2.new(0, 5, 0, 3)
-
-title.BackgroundTransparency = 1
-title.TextColor3 =
-	Color3.fromRGB(255,255,255)
-
-title.TextSize = 17
-title.Font = Enum.Font.GothamBold
-title.Text = "SPACE ANT LAG"
-
-title.Parent = frame
-
---==================================================
--- DISCORD
---==================================================
-
-local discord = Instance.new("TextLabel")
-
-discord.Size = UDim2.new(1, -10, 0, 25)
-discord.Position = UDim2.new(0, 5, 0, 38)
-
-discord.BackgroundTransparency = 1
-discord.TextColor3 =
-	Color3.fromRGB(150,190,255)
-
-discord.TextSize = 13
-discord.Font = Enum.Font.Gotham
-
-discord.Text = "https://discord.gg/WMa9NDzS6"
-
-discord.Parent = frame
-
---==================================================
--- 30 SEGUNDOS
---==================================================
-
-task.delay(30, function()
-
-	if gui and gui.Parent then
-		gui:Destroy()
+for _,x in ipairs(c:GetChildren()) do
+	if x:IsA("BloomEffect")
+		or x:IsA("BlurEffect")
+		or x:IsA("ColorCorrectionEffect")
+		or x:IsA("DepthOfFieldEffect")
+		or x:IsA("SunRaysEffect") then
+		x.Enabled=false
 	end
 
+	if x:IsA("Atmosphere") then
+		x.Density=0
+		x.Haze=0
+		x.Glare=0
+	end
+end
+
+for _,pl in ipairs(a:GetPlayers()) do
+	if pl.Character then
+		v(pl.Character)
+
+		for _,x in ipairs(pl.Character:GetDescendants()) do
+			w(x)
+		end
+	end
+end
+
+a.PlayerAdded:Connect(function(pl)
+	pl.CharacterAdded:Connect(function(ch)
+		task.wait(.3)
+		v(ch)
+
+		for _,x in ipairs(ch:GetDescendants()) do
+			w(x)
+		end
+	end)
 end)
 
---==================================================
--- FINAL
---==================================================
+b.DescendantAdded:Connect(function(x)
+	task.defer(function()
+		if x and x.Parent then
+			w(x)
 
-print("======================================")
-print(" SPACE ANT LAG ATIVADO")
-print(" QUALIDADE: MÍNIMA")
-print(" PERFORMANCE: MÁXIMA")
-print(" PARTICULAS: OFF")
-print(" TRAILS: OFF")
-print(" BEAMS: OFF")
-print(" LIGHTS: OFF")
-print(" SOMBRAS: OFF")
-print(" TEXTURAS: REDUZIDAS")
-print(" SKINS: REDUZIDAS")
-print(" MATERIAIS: SIMPLIFICADOS")
-print(" DRAGON: PRESERVADO")
-print("======================================")
+			local ch=x:FindFirstAncestorOfClass("Model")
+
+			if ch then
+				local pl=a:GetPlayerFromCharacter(ch)
+
+				if pl and pl~=f then
+					v(ch)
+				end
+			end
+		end
+	end)
+end)
+
+c.DescendantAdded:Connect(function(x)
+	task.defer(function()
+		if x and x.Parent then
+			w(x)
+		end
+	end)
+end)
+
+local x=Instance.new("ScreenGui")
+x.Name="SpaceAntLag"
+x.ResetOnSpawn=false
+x.IgnoreGuiInset=false
+x.Parent=f:WaitForChild("PlayerGui")
+
+local y=Instance.new("Frame")
+y.Size=UDim2.new(0,300,0,72)
+y.Position=UDim2.new(1,-315,0,20)
+y.BackgroundColor3=Color3.fromRGB(5,5,8)
+y.BackgroundTransparency=.12
+y.Parent=x
+
+local z=Instance.new("UICorner")
+z.CornerRadius=UDim.new(0,10)
+z.Parent=y
+
+local A=Instance.new("UIStroke")
+A.Thickness=1
+A.Color=Color3.fromRGB(0,120,255)
+A.Parent=y
+
+local B=Instance.new("TextLabel")
+B.Size=UDim2.new(1,-10,0,32)
+B.Position=UDim2.new(0,5,0,3)
+B.BackgroundTransparency=1
+B.TextColor3=Color3.fromRGB(255,255,255)
+B.TextSize=17
+B.Font=Enum.Font.GothamBold
+B.Text="SPACE ANT LAG"
+B.Parent=y
+
+local C=Instance.new("TextLabel")
+C.Size=UDim2.new(1,-10,0,25)
+C.Position=UDim2.new(0,5,0,38)
+C.BackgroundTransparency=1
+C.TextColor3=Color3.fromRGB(150,190,255)
+C.TextSize=13
+C.Font=Enum.Font.Gotham
+C.Text="https://discord.gg/WMa9NDzS6"
+C.Parent=y
+
+task.delay(30,function()
+	if x and x.Parent then
+		x:Destroy()
+	end
+end)
