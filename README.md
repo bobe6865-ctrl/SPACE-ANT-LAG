@@ -52,6 +52,30 @@ local function m(o)
 	if not j then return false end
 	local x=o
 	while x and x~=b do
+
+	--========================================
+-- SPACE ANT LAG: CÉU 100% CINZA
+--========================================
+
+pcall(function()
+    local sky = c:FindFirstChildOfClass("Sky")
+
+    if not sky then
+        sky = Instance.new("Sky")
+        sky.Parent = c
+    end
+
+    local texture = "rbxassetid://82868551497078"
+
+    sky.SkyboxBk = texture
+    sky.SkyboxDn = texture
+    sky.SkyboxFt = texture
+    sky.SkyboxLf = texture
+    sky.SkyboxRt = texture
+    sky.SkyboxUp = texture
+
+    sky.CelestialBodiesShown = false
+end)
 		if string.find(string.lower(x.Name),"dragon") then
 			return true
 		end
